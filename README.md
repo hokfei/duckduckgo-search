@@ -1,28 +1,24 @@
 # DuckDuckGo Search MCP
 
-Web search for OpenCode without an API key, browser, or paid dependency.
+Web search for AI assistants without an API key, browser, or paid dependency.
 
-Built because the built-in `websearch` tool fails with HTTP 402 in this setup,
-and the usual alternatives both need credentials. This uses DuckDuckGo's
-no-JavaScript endpoint instead.
+Built because the built-in `websearch` tool fails with HTTP 402 in many setups,
+and the usual alternatives (Brave, Tavily, Serper) all require credentials.
+This uses DuckDuckGo's no-JavaScript HTML endpoint instead.
 
 ## Tools
 
 | Tool | Purpose |
 | ---- | ------- |
 | `web_search` | Full web search: titles, URLs, snippets. **Rate limited** — see below. |
-| `instant_answer` | Short encyclopedic description of a named thing. Much more reliable. |
+| `instant_answer` | Short encyclopedic description of a named entity. Much more reliable. |
 | `search_health` | Whether search is usable, or how long a block lasts. |
 
-## Rate limiting — read this
+## Rate limiting
 
-DuckDuckGo rate limits the HTML endpoint aggressively, and the block is
-**IP-level**.
+DuckDuckGo rate limits the HTML endpoint aggressively, and the block is **IP-level**.
 
-Measured on this machine: the first two queries succeeded at ~0.7s each. The
-third, one second later, returned an HTTP 202 anomaly page. The block then
-persisted for **over three minutes** and survived `curl` as well as this client,
-confirming it is not a client bug.
+Typical behavior: the first 1-2 queries succeed quickly. A third query within a few seconds returns an HTTP 202 anomaly page. The block then persists for **several minutes** and affects all clients from the same IP (confirmed with `curl`).
 
 Consequences:
 
@@ -37,26 +33,34 @@ Consequences:
 endpoint was blocked**. It only knows named entities — libraries, tools,
 concepts — but it is the more dependable of the two.
 
-For a URL you already know, prefer OpenCode's built-in `fetch`. This exists for
-the gap `fetch` cannot cover: finding a page you don't have.
+For a URL you already know, prefer your environment's built-in `fetch`. This
+exists for the gap `fetch` cannot cover: finding a page you don't have.
 
 ## Setup
 
-Already installed. To rebuild:
+Requires Python 3.11+.
 
 ```bash
-py -3.12 -m venv .venv
-.\.venv\Scripts\python -m pip install -e ".[dev]"
+# 1. Create virtual environment
+python -m venv .venv
+
+# 2. Install in development mode
+.venv/bin/python -m pip install -e ".[dev]"
+# or on Windows:
+.venv\Scripts\python -m pip install -e ".[dev]"
 ```
 
-Registered in `~/.opencode/mcp.json`:
+Register the server in your MCP client configuration (e.g., `~/.opencode/mcp.json`):
 
 ```json
 "duckduckgo-search": {
-  "command": "C:\\Users\\you\\opencode-tools\\duckduckgo-search\\.venv\\Scripts\\python.exe",
+  "command": "/path/to/duckduckgo-search/.venv/bin/python",
   "args": ["-m", "ddg_search"]
 }
 ```
+
+Adjust the command path to your environment (use `.venv/bin/python` on Unix,
+`.venv\Scripts\python.exe` on Windows).
 
 ## Development
 
@@ -69,3 +73,7 @@ python probe_server.py  # drive a real server over stdio
 
 Parsing is unit tested against captured HTML; the network is only touched by
 the `integration` marked tests, which are excluded by default.
+
+## License
+
+MIT
