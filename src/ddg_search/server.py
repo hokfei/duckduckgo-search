@@ -99,14 +99,10 @@ class DuckDuckGoServer:
             on_call_tool=self.call_tool,
         )
 
-    async def list_tools(
-        self, context: Any = None, params: Any = None
-    ) -> ListToolsResult:
+    async def list_tools(self, context: Any = None, params: Any = None) -> ListToolsResult:
         return ListToolsResult(tools=[Tool(**t) for t in TOOLS])
 
-    async def call_tool(
-        self, context: Any = None, params: Any = None
-    ) -> CallToolResult:
+    async def call_tool(self, context: Any = None, params: Any = None) -> CallToolResult:
         name = getattr(params, "name", None)
         arguments = getattr(params, "arguments", None) or {}
 
@@ -134,10 +130,7 @@ class DuckDuckGoServer:
         payload = {
             "query": p.query,
             "result_count": len(results),
-            "results": [
-                {"title": r.title, "url": r.url, "snippet": r.snippet}
-                for r in results
-            ],
+            "results": [{"title": r.title, "url": r.url, "snippet": r.snippet} for r in results],
         }
         return _json(payload)
 
@@ -156,14 +149,11 @@ class DuckDuckGoServer:
                 "answer": answer.abstract,
                 "source": answer.abstract_source,
                 "source_url": answer.abstract_url,
-                "related": [
-                    {"topic": topic, "url": url} for topic, url in answer.related[:8]
-                ],
+                "related": [{"topic": topic, "url": url} for topic, url in answer.related[:8]],
                 "note": (
                     ""
                     if answer.has_answer
-                    else "No encyclopedic entry for that term. "
-                    "Use web_search to find web pages."
+                    else "No encyclopedic entry for that term. Use web_search to find web pages."
                 ),
             }
         )
@@ -186,9 +176,7 @@ class DuckDuckGoServer:
 
 
 def _json(payload: Any) -> CallToolResult:
-    return CallToolResult(
-        content=[TextContent(type="text", text=json.dumps(payload, indent=2))]
-    )
+    return CallToolResult(content=[TextContent(type="text", text=json.dumps(payload, indent=2))])
 
 
 def _error(message: str, hint: str | None = None) -> CallToolResult:

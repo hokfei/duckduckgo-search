@@ -29,9 +29,7 @@ USER_AGENT = (
 MIN_INTERVAL_SECONDS = 3.0
 RETRY_AFTER_BLOCK_SECONDS = 30.0
 
-_RESULT_LINK = re.compile(
-    r'<a[^>]*class="result__a"[^>]*href="([^"]+)"[^>]*>(.*?)</a>', re.S
-)
+_RESULT_LINK = re.compile(r'<a[^>]*class="result__a"[^>]*href="([^"]+)"[^>]*>(.*?)</a>', re.S)
 _RESULT_SNIPPET = re.compile(r'class="result__snippet"[^>]*>(.*?)</a>', re.S)
 _TAGS = re.compile(r"<[^>]+>")
 
@@ -91,9 +89,7 @@ class DuckDuckGoClient:
 
         cooldown = self._cooldown_until - now
         if cooldown > 0:
-            raise SearchBlocked(
-                f"Rate limited by DuckDuckGo; retry in {cooldown:.0f}s."
-            )
+            raise SearchBlocked(f"Rate limited by DuckDuckGo; retry in {cooldown:.0f}s.")
 
         since_last = now - self._last_request
         if since_last < self._min_interval:
